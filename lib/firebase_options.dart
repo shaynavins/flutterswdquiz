@@ -60,20 +60,21 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBwCONS4x6mSQQaveo94nEJ35ZfMm2rJiA',
-    appId: '1:766639764665:ios:bb154710aa3822451e5768',
+    appId: '1:766639764665:ios:2903d58130ea0d331e5768',
+    
     messagingSenderId: '766639764665',
     projectId: 'quizflutter-1b592',
     storageBucket: 'quizflutter-1b592.firebasestorage.app',
-    iosBundleId: 'com.example.swdquiz',
+    iosBundleId: 'com.example.quizapp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBwCONS4x6mSQQaveo94nEJ35ZfMm2rJiA',
-    appId: '1:766639764665:ios:bb154710aa3822451e5768',
+    appId: '1:766639764665:ios:2903d58130ea0d331e5768',
     messagingSenderId: '766639764665',
     projectId: 'quizflutter-1b592',
     storageBucket: 'quizflutter-1b592.firebasestorage.app',
-    iosBundleId: 'com.example.swdquiz',
+    iosBundleId: 'com.example.quizapp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

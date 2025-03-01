@@ -3,16 +3,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:swdquiz/firebase_options.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:swdquiz/firebase_options.dart';
+
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter is initialized before Firebase
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ); // Initializes Firebase
-    runApp(MyApp());
-  } catch (e) {
-    print("Firebase initialization error: $e");
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  print("✅ Firebase initialized successfully!");
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -21,26 +23,64 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final CollectionReference quizRef = FirebaseFirestore.instance.collection('Quiz');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<Map<String, dynamic>> questions = [];
+  int currentQuestionIndex = 0;
+  int? selectedOption; // Stores the selected radio button option
 
-  Future<void> addQuestion() async {
+  @override
+  void initState() {
+    super.initState();
+    fetchQuestions();
+  }
+
+  // 🔥 Fetch questions from Firestore
+  Future<void> fetchQuestions() async {
     try {
-      DocumentReference docRef = await quizRef.add({
-        'question': 'What is 5 + 3?',
-        'options': ['5', '6', '8', '10'], // Changed key from 'option' to 'options' for clarity
-        'correct_answer': 2, // Index of the correct option
-      });
+      QuerySnapshot snapshot = await _firestore.collection('QuizQuestions').get();
 
-      print("Document added with ID: ${docRef.id}");
-
-      // Show a Snackbar when the question is added
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Question Added Successfully!')),
-      );
+      if (snapshot.docs.isEmpty) {
+        print("🚫 No questions found in Firestore.");
+      } else {
+        setState(() {
+          questions = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+        });
+      }
     } catch (error) {
-      print("Error adding document: $error");
+      print("❌ Firestore read error: $error");
+    }
+  }
+
+  // ✅ Submit answer and check correctness
+  void submitAnswer(BuildContext context) {
+    if (selectedOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to Add Question')),
+        SnackBar(content: Text("⚠️ Please select an option")),
+      );
+      return;
+    }
+
+    int correctAnswer = questions[currentQuestionIndex]['correct_answer'];
+
+    if (selectedOption == correctAnswer) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("✅ Correct Answer!")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("❌ Wrong Answer! Try Again.")),
+      );
+    }
+
+    // Move to next question or show completion message
+    if (currentQuestionIndex < questions.length - 1) {
+      setState(() {
+        currentQuestionIndex++;
+        selectedOption = null; // Reset selection
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("🎯 Quiz Completed! Well Done!")),
       );
     }
   }
@@ -50,17 +90,140 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: Text("Quiz App")),
-        body: Center(
-          child: ElevatedButton(
-            onPressed: addQuestion,
-            child: Text("Add Question"),
-          ),
+        body: Builder(
+          builder: (context) {
+            return questions.isEmpty
+                ? Center(child: CircularProgressIndicator()) // Show loader if no questions
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          questions[currentQuestionIndex]['question'],
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      // 🔘 Display multiple-choice options using RadioListTile
+                      Column(
+                        children: List.generate(
+                          (questions[currentQuestionIndex]['options'] as List).length,
+                          (index) => RadioListTile(
+                            title: Text(questions[currentQuestionIndex]['options'][index].toString()),
+                            value: index,
+                            groupValue: selectedOption,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedOption = value as int?;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+
+                      // ✅ Submit Answer Button
+                      ElevatedButton(
+                        onPressed: () => submitAnswer(context),
+                        child: Text("Submit Answer"),
+                      ),
+                    ],
+                  );
+          },
         ),
       ),
     );
   }
 }
 
+/*import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:swdquiz/firebase_options.dart';
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("Firebase initialized successfully!");
+  } catch (e) {
+    print("Firebase initialization error: $e");
+  }
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState(); // ✅ Always call super.initState()
+    testFirestoreRead(); // ✅ Add this to check Firestore connection
+  }
+
+  Future<void> testFirestoreRead() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('QuizQuestions').get();
+
+      if (querySnapshot.docs.isEmpty) {
+        print("❌ No documents found in 'QuizQuestions'. Firestore might not be connected.");
+      } else {
+        for (var doc in querySnapshot.docs) {
+          print("📄 Found document: ${doc.id}, Data: ${doc.data()}");
+        }
+      }
+    } catch (e) {
+      print("❌ Firestore read error: $e");
+    }
+  }
+
+  Future<void> createCollectionAndAddDocument() async {
+  try {
+    print("🟡 Button pressed, attempting to add document...");
+
+    DocumentReference docRef = await _firestore.collection('QuizQuestions').add({
+      'question': 'What is 5 + 3?',
+      'options': ['5', '6', '8', '10'],
+      'correct_answer': 2,
+      'created_at': FieldValue.serverTimestamp(),
+    });
+
+    print("✅ Document added with ID: ${docRef.id}");
+  } catch (error) {
+    print("❌ Firestore write error: $error");
+    print("🔥 Possible Causes: 1) Firestore rules 2) Internet connection 3) Firebase setup");
+  }
+
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text("Quiz App")),
+        body: Center(
+          child: ElevatedButton(
+            onPressed: createCollectionAndAddDocument,
+            child: Text("Create Collection"),
+          ),
+        ),
+      ),
+    );
+  }
+}
+*/
 
 /* 
 USE THIS IF ERROR
