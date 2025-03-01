@@ -1,1 +1,48 @@
-{"firestore":{"rules":"firestore.rules","indexes":"firestore.indexes.json"},"flutter":{"platforms":{"android":{"default":{"projectId":"quizflutter-1b592","appId":"1:766639764665:android:264d0ab24af49b7e1e5768","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"quizflutter-1b592","appId":"1:766639764665:ios:bb154710aa3822451e5768","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"quizflutter-1b592","appId":"1:766639764665:ios:bb154710aa3822451e5768","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"quizflutter-1b592","configurations":{"android":"1:766639764665:android:264d0ab24af49b7e1e5768","ios":"1:766639764665:ios:bb154710aa3822451e5768","macos":"1:766639764665:ios:bb154710aa3822451e5768","web":"1:766639764665:web:17c65118a6be0b401e5768","windows":"1:766639764665:web:17c65118a6be0b401e5768"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "quizflutter-1b592",
+          "appId": "1:766639764665:android:264d0ab24af49b7e1e5768",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "quizflutter-1b592",
+          "appId": "1:766639764665:ios:bb154710aa3822451e5768",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "quizflutter-1b592",
+          "appId": "1:766639764665:ios:bb154710aa3822451e5768",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "quizflutter-1b592",
+          "configurations": {
+            "android": "1:766639764665:android:264d0ab24af49b7e1e5768",
+            "ios": "1:766639764665:ios:bb154710aa3822451e5768",
+            "macos": "1:766639764665:ios:bb154710aa3822451e5768",
+            "web": "1:766639764665:web:17c65118a6be0b401e5768",
+            "windows": "1:766639764665:web:17c65118a6be0b401e5768"
+          }
+        }
+      }
+    }
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}
